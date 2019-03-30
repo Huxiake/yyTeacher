@@ -1,5 +1,6 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
-  BASE_API: '"https://easy-mock.com/mock/5950a2419adc231f356a6636/vue-admin"',
+  BASE_API: '"http://39.108.105.43:8081"'
+  // BASE_API: '"http://47.107.66.134:80/subjects-share"'
 }

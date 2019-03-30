@@ -9,7 +9,16 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/v1': {
+        // target: 'http://47.107.66.134:80/subjects-share', // 楷东环境
+        target: 'http://39.108.105.43:8081', // 霞客环境
+        changeOrigin: true,
+        pathRewrite: {
+          '^/v1': '/v1'
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -57,7 +66,7 @@ module.exports = {
      * then assetsPublicPath should be set to "/bar/".
      * In most cases please use '/' !!!
      */
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

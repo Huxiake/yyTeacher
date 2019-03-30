@@ -1,7 +1,9 @@
 <template>
   <div class="navbar">
-    <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
-    <breadcrumb />
+    <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container" style="padding:0 5px;line-height: 66px"/>
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" style="left: 25px" @select="handleSelect">
+      <el-menu-item v-for="(item, index) in routers" :key="index" :index="item.path">{{ item.title }}</el-menu-item>
+    </el-menu>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -10,11 +12,11 @@
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
         <router-link class="inlineBlock" to="/">
           <el-dropdown-item>
-            Home
+            主页
           </el-dropdown-item>
         </router-link>
         <el-dropdown-item divided>
-          <span style="display:block;" @click="logout">LogOut</span>
+          <span style="display:block;" @click="logout">退出</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -23,19 +25,28 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
 export default {
   components: {
-    Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      activeIndex: '',
+      routers: []
+    }
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
     ])
+  },
+  created() {
+    this.activeIndex = '/' + this.$route.path.match(/\/(\S*)\//)[1]
+    const routers = this.$router.options.routes
+    this.routers = routers.filter(item => !item.hidden)
   },
   methods: {
     toggleSideBar() {
@@ -45,6 +56,9 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
+    },
+    handleSelect(key, keyPath) {
+      this.$router.push(key)
     }
   }
 }
@@ -52,8 +66,13 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .navbar {
-  height: 50px;
-  line-height: 50px;
+  height: 64px;
+  width: 100%;
+  line-height: 70px;
+  padding: 4px;
+  position: fixed;
+  z-index: 1001;
+  background-color: #FFFFFF;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.12), 0 0 3px 0 rgba(0,0,0,.04);
   .hamburger-container {
     line-height: 58px;
@@ -68,10 +87,12 @@ export default {
     color: red;
   }
   .avatar-container {
-    height: 50px;
-    display: inline-block;
     position: absolute;
-    right: 35px;
+    display: inline-block;
+    height: 64px;
+    width: 240px;
+    right: 220px;
+    top: 0;
     .avatar-wrapper {
       cursor: pointer;
       margin-top: 5px;
@@ -93,3 +114,8 @@ export default {
 }
 </style>
 
+<style>
+.navbar .hamburger-container {
+    padding: 0 5px;
+}
+</style>

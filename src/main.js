@@ -5,6 +5,7 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
+import moment from 'moment'
 
 import '@/styles/index.scss' // global css
 
@@ -23,9 +24,9 @@ import '@/permission' // permission control
  * it will intercept your request, so you won't see the request in the network.
  * If you remove `../mock` it will automatically request easy-mock data.
  */
-import '../mock' // simulation data
+// import '../mock' // simulation data
 
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, { locale, moment })
 
 Vue.config.productionTip = false
 

@@ -4,7 +4,7 @@
     <sidebar class="sidebar-container"/>
     <div class="main-container">
       <navbar/>
-      <app-main/>
+      <app-main style="min-height: calc(100vh - 104px)"/>
     </div>
   </div>
 </template>
