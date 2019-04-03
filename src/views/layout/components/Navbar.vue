@@ -5,10 +5,10 @@
       <el-menu-item v-for="(item, index) in routers" :key="index" :index="item.path">{{ item.title }}</el-menu-item>
     </el-menu>
     <el-dropdown class="avatar-container" trigger="click">
-      <div class="avatar-wrapper">
-        <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-        <i class="el-icon-caret-bottom"/>
-      </div>
+      <!-- <div class="avatar-wrapper">
+      </div> -->
+      <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+      <span>{{ name }}</span>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
         <router-link class="inlineBlock" to="/">
           <el-dropdown-item>
@@ -40,7 +40,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
   },
   created() {
@@ -68,7 +69,7 @@ export default {
 .navbar {
   height: 64px;
   width: 100%;
-  line-height: 70px;
+  line-height: 64px;
   padding: 4px;
   position: fixed;
   z-index: 1001;
@@ -89,9 +90,7 @@ export default {
   .avatar-container {
     position: absolute;
     display: inline-block;
-    height: 64px;
-    width: 240px;
-    right: 220px;
+    right: 250px;
     top: 0;
     .avatar-wrapper {
       cursor: pointer;
@@ -109,6 +108,9 @@ export default {
         top: 25px;
         font-size: 12px;
       }
+    }
+    img {
+      vertical-align: middle;
     }
   }
 }

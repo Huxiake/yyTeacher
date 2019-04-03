@@ -9,40 +9,64 @@
         <div class="table-card-body">
           <div class="table-tools">
             <el-row :gutter="16">
-              <el-col :span="10">
-                <el-input/>
+              <el-col :span="16">
+                <el-button type="primary" @click="handleGetCase">新建主题</el-button>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="7">
+                <el-input v-model="search.name"/>
+              </el-col>
+              <el-col :span="1">
                 <el-button type="primary" @click="handleGetCase">查询</el-button>
               </el-col>
             </el-row>
           </div>
           <div class="table-body">
             <el-table
-              :data="caseList"
+              :data="caseThemesList"
             >
               <el-table-column
                 key="2"
-                prop="themeName"
+                prop="name"
                 label="主题名称"
+                width="200"
               />
               <el-table-column
                 key="3"
                 prop="parentName"
                 label="父主题名称"
+                width="200"
               />
               <el-table-column
                 key="1"
-                prop="name"
-                label="案例名称"
+                prop="description"
+                label="描述"
               />
               <el-table-column
-                key="8"
-                label="审核状态"
+                key="status"
+                label="状态"
+                width="100"
               >
                 <template slot-scope="scope">
                   <el-tag v-if="scope.row.status === 'enabled'" type="success">正常</el-tag>
                   <el-tag v-if="scope.row.status === 'disabled'" type="danger">禁用</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    :disabled="!(scope.row.createBy === userId)"
+                    size="mini"
+                    type="primary"
+                    icon="el-icon-edit"
+                    circle
+                    @click="handleEdit(scope.$index, scope.row)"/>
+                  <el-button
+                    :disabled="!(scope.row.createBy === userId)"
+                    size="mini"
+                    type="danger"
+                    icon="el-icon-delete"
+                    circle
+                    @click="handleDelete(scope.$index, scope.row)"/>
                 </template>
               </el-table-column>
             </el-table>
@@ -54,7 +78,8 @@
 </template>
 
 <script>
-import { getCase } from '@/api/case'
+import { mapGetters } from 'vuex'
+import { getCaseThemes } from '@/api/case'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
@@ -63,21 +88,27 @@ export default {
   },
   data() {
     return {
-      caseList: []
+      search: {
+        name: '',
+        pageNum: 0,
+        pageSize: 10
+      },
+      caseThemesList: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'userId'
+    ])
   },
   created() {
     this.handleGetCase()
   },
   methods: {
     handleGetCase() {
-      getCase(0, 10).then(response => {
+      getCaseThemes(this.search).then(response => {
         if (response.data.errorMsg === '操作成功') {
-          const data = response.data.data
-          console.log(data)
-          const rows = data.rows
-          this.caseList = rows
-          console.log(rows)
+          this.caseThemesList = response.data.data.rows
         }
       })
     }

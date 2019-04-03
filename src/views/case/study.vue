@@ -8,11 +8,26 @@
       <div class="table-card">
         <div class="table-card-body">
           <el-table
-            :data="study"
+            :data="studyComments"
+            header-cell-class-name="HeaderCell"
           >
             <el-table-column
-              prop="question"
+              prop="teacherContent"
               label="回答列表"
+            />
+            <el-table-column
+              label="评价等级"
+            >
+              <template slot-scope="scope">
+                <el-tag v-if="scope.row.teacherCommentGrade === 'excellent'" type="success">优秀</el-tag>
+                <el-tag v-if="scope.row.teacherCommentGrade === 'good'">良好</el-tag>
+                <el-tag v-if="scope.row.teacherCommentGrade === 'medium'" type="warning">中等</el-tag>
+                <el-tag v-if="scope.row.teacherCommentGrade === 'bad'" type="danger">差</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="question"
+              label="评论"
             />
             <el-table-column
               width="160px"
@@ -49,7 +64,8 @@
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
-import { getCaseStudy, getCaseStudyComments, putCaseStudyComments } from '@/api/case'
+// import { getCaseStudy, getCaseStudyComments, putCaseStudyComments } from '@/api/case'
+import { getCaseStudyComments, putCaseStudyComments } from '@/api/case'
 
 export default {
   components: {
@@ -73,25 +89,26 @@ export default {
     }
   },
   created() {
-    this.casestudyId = this.$route.params.casestudyid
+    this.casestudyId = this.$route.params.id
+    console.log(this.casestudyId)
     this.caseStudyComments()
-    this.caseStudy()
+    // this.caseStudy()
   },
   methods: {
     caseStudyComments() {
-      getCaseStudyComments().then(res => {
+      getCaseStudyComments(this.casestudyId).then(res => {
         if (res.data.errorMsg === '操作成功') {
           this.studyComments = res.data.data.rows
         }
       })
     },
-    caseStudy() {
-      getCaseStudy().then(res => {
-        if (res.data.errorMsg === '操作成功') {
-          this.study = res.data.data.rows
-        }
-      })
-    },
+    // caseStudy() {
+    //   getCaseStudy().then(res => {
+    //     if (res.data.errorMsg === '操作成功') {
+    //       this.study = res.data.data.rows
+    //     }
+    //   })
+    // },
     handleRecovery(id) {
       this.dialogFormVisible = true
       this.recovery = {}
@@ -160,10 +177,13 @@ export default {
     }
   }
 }
-.el-table th > .cell {
+.HeaderCell {
   font-size: 20px;
   padding-left: 0;
   color: #5f5f5f;
+}
+.el-table th > .cell {
+  padding-left: 0;
 }
 .el-icon-arrow-right::before {
     content: "";

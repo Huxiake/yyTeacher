@@ -20,6 +20,14 @@ export function getLoginStatus() {
   })
 }
 
+// 获取当前用户信息
+export function getLoginUser() {
+  return request({
+    url: 'v1/teacher/myCenter/getLoginUser',
+    method: 'get'
+  })
+}
+
 export function logout() {
   return request({
     url: '/user/logout',

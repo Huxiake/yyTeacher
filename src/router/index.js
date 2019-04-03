@@ -39,6 +39,20 @@ export const constantRouterMap = [
         meta: { title: '案例管理', icon: 'tree' }
       },
       {
+        path: '/case/manage/edit/:id',
+        name: 'caseedit',
+        hidden: true,
+        component: () => import('@/views/case/edit'),
+        meta: { title: '案例编辑', icon: 'tree' }
+      },
+      {
+        path: '/case/manage/add',
+        name: 'caseadd',
+        hidden: true,
+        component: () => import('@/views/case/add'),
+        meta: { title: '案例新增', icon: 'tree' }
+      },
+      {
         path: '/case/manage/details/:id',
         name: 'details',
         hidden: true,
@@ -46,7 +60,7 @@ export const constantRouterMap = [
         meta: { title: '案例详情', icon: 'tree' }
       },
       {
-        path: '/case/manage/study/:casestudyid',
+        path: '/case/manage/study/:id',
         name: 'study',
         hidden: true,
         component: () => import('@/views/case/study'),
@@ -61,7 +75,7 @@ export const constantRouterMap = [
       },
       {
         path: '/case/title',
-        name: 'study',
+        name: 'title',
         component: () => import('@/views/case/title'),
         meta: { title: '案例题目管理', icon: 'tree' }
       }
@@ -86,7 +100,7 @@ export const constantRouterMap = [
       },
       {
         path: '/study/manage',
-        name: 'manage',
+        name: 'studentmanage',
         component: () => import('@/views/study/manage'),
         meta: { title: '学生信息管理', icon: 'form' }
       }

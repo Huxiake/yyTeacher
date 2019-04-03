@@ -1,9 +1,10 @@
-import { login, getLoginStatus } from '@/api/login'
+import { login, getLoginStatus, getLoginUser } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
+    userId: '',
     name: '',
     avatar: '',
     roles: []
@@ -15,6 +16,9 @@ const user = {
     },
     SET_NAME: (state, name) => {
       state.name = name
+    },
+    SET_USERID: (state, userId) => {
+      state.userId = userId
     },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
@@ -30,10 +34,8 @@ const user = {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
-          console.log('1')
           const data = response.data
           if (data.errorMsg === '操作成功') {
-            console.log('data', data)
             setToken('7681ea41')
             commit('SET_TOKEN', '7681ea41')
             resolve(response)
@@ -44,7 +46,21 @@ const user = {
       })
     },
 
-    // 获取用户信息
+    // 获取当前用户信息
+    GetLoginUser({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getLoginUser(state.t).then(response => {
+          if (response.data.errorMsg === '操作成功') {
+            const data = response.data.data
+            commit('SET_NAME', data.name)
+            commit('SET_USERID', data.id)
+            commit('SET_AVATAR', data.headImg)
+          }
+        })
+      })
+    },
+
+    // 判断登录状态
     GetLoginStatus({ commit, state }) {
       return new Promise((resolve, reject) => {
         getLoginStatus(state.token).then(response => {
