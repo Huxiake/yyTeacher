@@ -10,6 +10,38 @@ export function getCase(pageInfo) {
   })
 }
 
+// 收藏案例
+export function caseCollections(id) {
+  return request({
+    url: '/v1/teacher/caseCollections?caseId=' + id,
+    method: 'post'
+  })
+}
+
+// 取消收藏案例
+export function cancelCaseCollections(id) {
+  return request({
+    url: '/v1/teacher/caseCollections/cancel?caseId=' + id,
+    method: 'delete'
+  })
+}
+
+// 上架案例
+export function caseOnshelf(id) {
+  return request({
+    url: '/v1/teacher/cases/onShelf/' + id,
+    method: 'delete'
+  })
+}
+
+// 下架案例
+export function caseUnshelf(id) {
+  return request({
+    url: '/v1/teacher/case/soldOut/' + id,
+    method: 'put'
+  })
+}
+
 // 获取案例详情
 export function getCaseDetails(id) {
   return request({
@@ -45,9 +77,9 @@ export function deleteCase(id) {
 }
 
 // 获取案例问题
-export function getCaseStudy() {
+export function getCaseStudy(id) {
   return request({
-    url: '/v1/teacher/caseStudy?pageNum=0&pageSize=100',
+    url: '/v1/teacher/caseStudy?caseId=' + id + '&pageNum=0&pageSize=100',
     method: 'get'
   })
 }
@@ -58,6 +90,15 @@ export function newCaseStudy(question) {
   return request({
     url: '/v1/teacher/caseStudy?' + data,
     method: 'post'
+  })
+}
+
+// 修改案例问题
+export function editCaseStudy(id, question) {
+  const data = qs.stringify(question)
+  return request({
+    url: '/v1/teacher/caseStudy/' + id + '?' + data,
+    method: 'put'
   })
 }
 
@@ -82,9 +123,9 @@ export function putCaseStudyComments(id, recovery) {
 }
 
 // 获取案例评论
-export function getCaseComments() {
+export function getCaseComments(id) {
   return request({
-    url: '/v1/teacher/caseComments/pageList?pageNum=0&pageSize=100',
+    url: '/v1/teacher/caseComments/pageList?caseId=' + id + '&pageNum=0&pageSize=100',
     method: 'get'
   })
 }
@@ -135,8 +176,42 @@ export function getCaseTitles(titlesInfo) {
 // 获取案例主题ID列表
 export function getCaseThemeId() {
   return request({
-    url: 'v1/teacher/caseThemes',
+    url: '/v1/teacher/caseThemes',
     method: 'get'
+  })
+}
+
+// 修改主题
+export function editCaseThemes(id, theme) {
+  const data = qs.stringify(theme)
+  return request({
+    url: '/v1/teacher/caseThemes/' + id + '?' + data,
+    method: 'put'
+  })
+}
+
+// 新建主题
+export function addCaseThemes(theme) {
+  const data = qs.stringify(theme)
+  return request({
+    url: '/v1/teacher/caseThemes/?' + data,
+    method: 'post'
+  })
+}
+
+// 删除主题
+export function deleteCaseThemes(id) {
+  return request({
+    url: '/v1/teacher/caseThemes/' + id,
+    method: 'delete'
+  })
+}
+
+// 启/禁用主题
+export function caseThemeAble(op, id) {
+  return request({
+    url: '/v1/teacher/caseThemes/' + op + '/' + id,
+    method: 'put'
   })
 }
 
@@ -145,6 +220,40 @@ export function getCaseTitleId() {
   return request({
     url: '/v1/teacher/caseTitles',
     method: 'get'
+  })
+}
+
+// 修改题目
+export function editCaseTitles(id, title) {
+  const data = qs.stringify(title)
+  return request({
+    url: '/v1/teacher/caseTitles/' + id + '?' + data,
+    method: 'put'
+  })
+}
+
+// 新建题目
+export function addCaseTitles(title) {
+  const data = qs.stringify(title)
+  return request({
+    url: '/v1/teacher/caseTitles/?' + data,
+    method: 'post'
+  })
+}
+
+// 删除题目
+export function deleteCaseTitles(id) {
+  return request({
+    url: '/v1/teacher/caseTitles/' + id,
+    method: 'delete'
+  })
+}
+
+// 启/禁用题目
+export function caseTitleAble(op, id) {
+  return request({
+    url: '/v1/teacher/caseTitles/' + op + '/' + id,
+    method: 'put'
   })
 }
 

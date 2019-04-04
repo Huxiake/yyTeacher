@@ -12,9 +12,14 @@
             header-cell-class-name="HeaderCell"
           >
             <el-table-column
-              prop="teacherContent"
-              label="回答列表"
-            />
+              label="学生回答"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.studentName }}</span>
+                <span style="font-size: 12px;margin-left: 5px;">{{ new Date(scope.row.studentCommentDate).toLocaleString() }}</span>
+                <span>{{ scope.row.studentContent }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               label="评价等级"
             >
@@ -27,8 +32,14 @@
             </el-table-column>
             <el-table-column
               prop="question"
-              label="评论"
-            />
+              label="教师回复"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.teacherName }}</span>
+                <span>{{ scope.row.teacherContent }}</span>
+                <span style="font-size: 12px;margin-left: 5px;">{{ new Date(scope.row.teacherCommentDate).toLocaleString() }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               width="160px"
             >
@@ -90,7 +101,6 @@ export default {
   },
   created() {
     this.casestudyId = this.$route.params.id
-    console.log(this.casestudyId)
     this.caseStudyComments()
     // this.caseStudy()
   },
@@ -115,7 +125,6 @@ export default {
       this.activeId = id
     },
     handlePut() {
-      console.log(this.recovery)
       putCaseStudyComments(this.activeId, this.recovery)
     }
   }

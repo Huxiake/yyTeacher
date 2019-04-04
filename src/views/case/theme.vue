@@ -10,13 +10,13 @@
           <div class="table-tools">
             <el-row :gutter="16">
               <el-col :span="16">
-                <el-button type="primary" @click="handleGetCase">新建主题</el-button>
+                <el-button type="primary" @click="handleAdd">新建主题</el-button>
               </el-col>
               <el-col :span="7">
                 <el-input v-model="search.name"/>
               </el-col>
               <el-col :span="1">
-                <el-button type="primary" @click="handleGetCase">查询</el-button>
+                <el-button type="primary" @click="handleGetCaseThemes">查询</el-button>
               </el-col>
             </el-row>
           </div>
@@ -31,27 +31,23 @@
                 width="200"
               />
               <el-table-column
-                key="3"
-                prop="parentName"
-                label="父主题名称"
-                width="200"
-              />
-              <el-table-column
                 key="1"
                 prop="description"
+                align="center"
                 label="描述"
               />
               <el-table-column
                 key="status"
                 label="状态"
                 width="100"
+                align="center"
               >
                 <template slot-scope="scope">
                   <el-tag v-if="scope.row.status === 'enabled'" type="success">正常</el-tag>
                   <el-tag v-if="scope.row.status === 'disabled'" type="danger">禁用</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="100">
+              <el-table-column label="操作" width="200" align="center">
                 <template slot-scope="scope">
                   <el-button
                     :disabled="!(scope.row.createBy === userId)"
@@ -59,7 +55,7 @@
                     type="primary"
                     icon="el-icon-edit"
                     circle
-                    @click="handleEdit(scope.$index, scope.row)"/>
+                    @click="handleEdit(scope.row)"/>
                   <el-button
                     :disabled="!(scope.row.createBy === userId)"
                     size="mini"
@@ -67,9 +63,49 @@
                     icon="el-icon-delete"
                     circle
                     @click="handleDelete(scope.$index, scope.row)"/>
+                  <el-button
+                    v-if="scope.row.status === 'disabled'"
+                    :disabled="!(scope.row.createBy === userId)"
+                    size="mini"
+                    type="success"
+                    @click="handleOnShelf(scope.row.id)">启用</el-button>
+                  <el-button
+                    v-if="scope.row.status === 'enabled'"
+                    :disabled="!(scope.row.createBy === userId)"
+                    size="mini"
+                    type="danger"
+                    @click="handleUnShelf(scope.row.id)">禁用</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <el-dialog :visible.sync="dialogEditVisible" title="修改主题">
+              <el-form :model="editTheme">
+                <el-form-item label-width="200" label="主题名称">
+                  <el-input v-model="editTheme.name"/>
+                </el-form-item>
+                <el-form-item label-width="200" label="主题描述">
+                  <el-input v-model="editTheme.description"/>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogEditVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleEditPut">确 定</el-button>
+              </div>
+            </el-dialog>
+            <el-dialog :visible.sync="dialogAddVisible" title="新建主题">
+              <el-form :model="addTheme">
+                <el-form-item label-width="200" label="主题名称">
+                  <el-input v-model="addTheme.name"/>
+                </el-form-item>
+                <el-form-item label-width="200" label="主题描述">
+                  <el-input v-model="addTheme.description"/>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogAddVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleAddPut">确 定</el-button>
+              </div>
+            </el-dialog>
           </div>
         </div>
       </div>
@@ -79,7 +115,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getCaseThemes } from '@/api/case'
+import { getCaseThemes, addCaseThemes, editCaseThemes, deleteCaseThemes, caseThemeAble } from '@/api/case'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
@@ -88,12 +124,24 @@ export default {
   },
   data() {
     return {
+      dialogEditVisible: false,
+      dialogAddVisible: false,
       search: {
         name: '',
         pageNum: 0,
         pageSize: 10
       },
-      caseThemesList: []
+      caseThemesList: [],
+      nowId: '',
+      editTheme: {
+        name: '',
+        parentId: ''
+      },
+      addTheme: {
+        description: '',
+        name: '',
+        parentId: ''
+      }
     }
   },
   computed: {
@@ -102,13 +150,87 @@ export default {
     ])
   },
   created() {
-    this.handleGetCase()
+    this.handleGetCaseThemes()
   },
   methods: {
-    handleGetCase() {
+    handleGetCaseThemes() {
       getCaseThemes(this.search).then(response => {
         if (response.data.errorMsg === '操作成功') {
           this.caseThemesList = response.data.data.rows
+        }
+      })
+    },
+    handleEdit(data) {
+      this.editTheme = {}
+      console.log(data)
+      this.dialogEditVisible = true
+      this.nowId = data.id
+      this.editTheme.name = data.name
+    },
+    handleAdd(id) {
+      this.dialogAddVisible = true
+      this.addTheme = {}
+    },
+    handleEditPut() {
+      editCaseThemes(this.nowId, this.editTheme).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+          this.handleGetCaseThemes()
+          this.dialogEditVisible = false
+        }
+      })
+    },
+    handleAddPut() {
+      addCaseThemes(this.addTheme).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'success',
+            message: '新建成功!'
+          })
+          this.handleGetCaseThemes()
+          this.dialogAddVisible = false
+        }
+      })
+    },
+    handleDelete(id) {
+      this.$confirm('此操作将删除该主题, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteCaseThemes(id).then(res => {
+          if (res.data.errorMsg === '操作成功') {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.caseComments()
+          }
+        })
+      })
+    },
+    handleOnShelf(id) {
+      caseThemeAble('enable', id).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'success',
+            message: '已启用!'
+          })
+          this.handleGetCaseThemes()
+        }
+      })
+    },
+    handleUnShelf(id) {
+      caseThemeAble('disable', id).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'info',
+            message: '已禁用!'
+          })
+          this.handleGetCaseThemes()
         }
       })
     }

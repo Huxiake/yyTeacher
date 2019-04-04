@@ -14,6 +14,9 @@
             <el-form-item label="案例名称">
               <el-input v-model="caseForm.name"/>
             </el-form-item>
+            <el-form-item label="关键字">
+              <el-input v-model="caseForm.workkey"/>
+            </el-form-item>
             <el-form-item label="全文内容">
               <el-input v-model="caseForm.content" type="textarea"/>
             </el-form-item>
@@ -82,6 +85,7 @@ export default {
       caseForm: {
         content: '',
         digest: '',
+        workkey: '',
         analyzeContent: '',
         id: '',
         name: '',

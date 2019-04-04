@@ -8,33 +8,35 @@
       <div class="table-card">
         <div class="table-card-header">
           案例详情
+          <el-button :type="isCollected ? 'warning' : 'info'" icon="el-icon-star-off" size="mini" circle style="font-size: 10px;" @click="handleCollections()"/>
+          <el-button :type="isCollected ? 'warning' : 'info'" size="mini" circle style="width:27px;height:27px;margin-left: 32px;font-size: 10px;margin-top: 5px;position: absolute;" @click="handleCollections()"/>
+          <el-button type="info" icon="el-icon-download" size="mini" circle style="margin-left: 0px; font-size: 10px;"/>
+          <svg-icon icon-class="zan" style="width: 10px;position: absolute;margin-top: 7px;margin-left: 14px; color:#FFFFFF"/>
         </div>
         <div class="table-card-body">
           <el-row :gutter="16" type="flex" justify="center">
             <el-col :span="4">
-              <span style="font-size: 16px; font-weight: bold">{{ this.case.titleName }}</span>
-            </el-col>
-          </el-row>
-          <el-row :gutter="16" type="flex" justify="end">
-            <el-col :span="2">
-              <span style="color:#9b9b9b">{{ this.case.userName }}</span>
+              <span style="font-size: 16px; font-weight: bold">{{ caSe.titleName }}</span>
             </el-col>
           </el-row>
           <el-form label-width="100px">
+            <el-form-item label="作者:">
+              <span>{{ caSe.userName }}</span>
+            </el-form-item>
             <el-form-item label="主题:">
-              <span>{{ this.case.themeName }}</span>
+              <span>{{ caSe.themeName }}</span>
             </el-form-item>
             <el-form-item label="摘要:">
-              <span>{{ this.case.digest }}</span>
+              <span>{{ caSe.digest }}</span>
             </el-form-item>
             <el-form-item label="关键字:">
-              <span>{{ this.case.keyword }}</span>
+              <span>{{ caSe.keyword }}</span>
             </el-form-item>
             <el-form-item label="全文内容:">
-              <span>{{ this.case.content }}</span>
+              <span>{{ caSe.content }}</span>
             </el-form-item>
             <el-form-item label="分析内容:">
-              <span>{{ this.case.analyzeContent }}</span>
+              <span>{{ caSe.analyzeContent }}</span>
             </el-form-item>
           </el-form>
           <el-table
@@ -52,20 +54,31 @@
               align="right"
             >
               <template slot-scope="scope">
-                <el-button type="primary" size="small" @click="handleEdit(scope.row.question)">修改</el-button>
+                <el-button type="primary" size="small" @click="handleEdit(scope.row)">修改</el-button>
                 <el-button type="primary" size="small" @click="handleReply(scope.row.id)">回答列表</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <el-dialog :visible.sync="dialogFormVisible" title="新增问题">
-            <el-form :model="question">
+          <el-dialog :visible.sync="dialogNewVisible" title="新增问题">
+            <el-form :model="newQuestion">
               <el-form-item label-width="200" label="问题内容">
-                <el-input v-model="question.question" type="textarea" autosize/>
+                <el-input v-model="newQuestion.question" type="textarea" autosize/>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="handlePut">确 定</el-button>
+              <el-button @click="dialogNewVisible = false">取 消</el-button>
+              <el-button type="primary" @click="handleNewPut">确 定</el-button>
+            </div>
+          </el-dialog>
+          <el-dialog :visible.sync="dialogEditVisible" title="修改问题">
+            <el-form :model="editQuestion">
+              <el-form-item label-width="200" label="问题内容">
+                <el-input v-model="editQuestion.question" type="textarea" autosize/>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogEditVisible = false">取 消</el-button>
+              <el-button type="primary" @click="handleEditPut">确 定</el-button>
             </div>
           </el-dialog>
           <div style="margin-top: 40px;color:#5f5f5f;font-size:20px;font-weight: bold">
@@ -109,7 +122,7 @@
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
-import { getCaseDetails, getCaseStudy, newCaseStudy, getCaseComments, deleteCaseComments, auditComment, putCaseComments } from '@/api/case'
+import { getCaseDetails, getCaseStudy, newCaseStudy, editCaseStudy, getCaseComments, deleteCaseComments, auditComment, putCaseComments, caseCollections, cancelCaseCollections } from '@/api/case'
 
 export default {
   components: {
@@ -117,18 +130,26 @@ export default {
   },
   data() {
     return {
-      dialogFormVisible: false,
+      dialogNewVisible: false,
+      dialogEditVisible: false,
       caseId: '',
-      case: {
+      isCollected: false,
+      nowStudyId: '',
+      caSe: {
         titleName: '',
         userName: '',
         themeName: '',
         keyword: '',
         content: '',
         digest: '',
-        analyzeContent: ''
+        analyzeContent: '',
+        isCollected: false
       },
-      question: {
+      newQuestion: {
+        caseId: '',
+        question: ''
+      },
+      editQuestion: {
         caseId: '',
         question: ''
       },
@@ -142,15 +163,17 @@ export default {
   },
   created() {
     this.caseId = this.$route.params.id
-    this.caseDetails(this.caseId)
+    this.caseDetails()
     this.caseStudy()
     this.caseComments()
   },
   methods: {
-    caseDetails(id) {
-      getCaseDetails(id).then(res => {
+    caseDetails() {
+      getCaseDetails(this.caseId).then(res => {
         if (res.data.errorMsg === '操作成功') {
-          this.case = res.data.data
+          this.caSe = res.data.data
+          this.isCollected = this.caSe.isCollected
+          console.log(this.isCollected)
         }
       })
     },
@@ -158,38 +181,82 @@ export default {
       return (
         <div>
           <span>问题列表</span>
-          <el-button type='primary' size='small' style='margin-left: 20px' onClick={ this.handleNew }>新增</el-button>
+          <el-button type='primary' size='small' style='margin-left: 20px' onClick={ this.handleNewPut }>新增</el-button>
         </div>
       )
     },
     caseStudy() {
-      getCaseStudy().then(res => {
+      getCaseStudy(this.caseId).then(res => {
         if (res.data.errorMsg === '操作成功') {
           this.study = res.data.data.rows
         }
       })
     },
     caseComments() {
-      getCaseComments().then(res => {
+      getCaseComments(this.caseId).then(res => {
         if (res.data.errorMsg === '操作成功') {
           this.comments = res.data.data.rows
         }
       })
     },
+    handleCollections() {
+      if (!this.caSe.isCollected) {
+        caseCollections(this.caseId).then(res => {
+          if (res.data.errorMsg === '操作成功') {
+            this.$message({
+              type: 'success',
+              message: '已收藏!'
+            })
+          }
+          this.caseDetails()
+        })
+      } else {
+        cancelCaseCollections(this.caseId).then(res => {
+          if (res.data.errorMsg === '操作成功') {
+            this.$message({
+              type: 'info',
+              message: '取消收藏!'
+            })
+          }
+          this.caseDetails()
+        })
+      }
+    },
+    handleDown() {
+      console.log('111')
+    },
     handleNew() {
-      this.question = {}
-      this.question.caseId = this.caseId
-      this.dialogFormVisible = true
+      this.newQuestion = {}
+      this.newQuestion.caseId = this.caseId
+      this.dialogNewVisible = true
     },
     handleEdit(data) {
-      this.question.caseId = this.caseId
-      this.question.question = data
-      this.dialogFormVisible = true
+      this.editQuestion.caseId = this.caseId
+      this.editQuestion.question = data.question
+      this.nowStudyId = data.id
+      console.log(data)
+      this.dialogEditVisible = true
     },
-    handlePut() {
-      newCaseStudy(this.question).then(res => {
+    handleNewPut() {
+      newCaseStudy(this.newQuestion).then(res => {
         if (res.data.errorMsg === '操作成功') {
-          this.dialogFormVisible = false
+          this.dialogNewVisible = false
+          this.$message({
+            type: 'success',
+            message: '新建成功!'
+          })
+          this.caseStudy()
+        }
+      })
+    },
+    handleEditPut() {
+      editCaseStudy(this.nowStudyId, this.editQuestion).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.dialogEditVisible = false
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
           this.caseStudy()
         }
       })
@@ -197,7 +264,7 @@ export default {
     handleReply(id) {
       this.$router.push({
         name: 'study',
-        params: { casestudyid: id }
+        params: { id: id }
       })
     },
     handleDelete(id) {
@@ -223,7 +290,7 @@ export default {
         cancelButtonText: '不通过',
         type: 'warning'
       }).then(() => {
-        auditComment(id, 'to_audit').then(res => {
+        auditComment(id, 'audit_pass').then(res => {
           if (res.data.errorMsg === '操作成功') {
             this.$message({
               type: 'success',

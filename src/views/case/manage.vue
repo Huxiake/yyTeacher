@@ -62,24 +62,29 @@
                 key="1"
                 prop="name"
                 label="案例名称"
+                align="center"
               />
               <el-table-column
                 key="11"
                 prop="onShelfBy"
+                align="center"
                 label="发布者"
               />
               <el-table-column
                 key="2"
                 prop="themeName"
+                align="center"
                 label="主题"
               />
               <el-table-column
                 key="3"
                 prop="titleName"
+                align="center"
                 label="题目"
               />
               <el-table-column
                 key="4"
+                align="center"
                 label="是否上架"
               >
                 <template slot-scope="scope">
@@ -89,6 +94,7 @@
               </el-table-column>
               <el-table-column
                 key="8"
+                align="center"
                 label="审核状态"
               >
                 <template slot-scope="scope">
@@ -99,6 +105,7 @@
               </el-table-column>
               <el-table-column
                 key="9"
+                align="center"
                 label="状态"
               >
                 <template slot-scope="scope">
@@ -108,6 +115,7 @@
               </el-table-column>
               <el-table-column
                 key="7"
+                align="center"
                 label="评价"
               >
                 <template slot-scope="scope">
@@ -118,6 +126,7 @@
               </el-table-column>
               <el-table-column
                 key="17"
+                align="center"
                 label="操作"
               >
                 <template slot-scope="scope">
@@ -137,6 +146,25 @@
                     @click="handleDelete(scope.row.id)"/>
                 </template>
               </el-table-column>
+              <el-table-column
+                align="center"
+                label="上下架"
+              >
+                <template slot-scope="scope">
+                  <el-button
+                    v-if="!scope.row.isOnShelf"
+                    :disabled="!(scope.row.userId === userId)"
+                    size="mini"
+                    type="danger"
+                    @click="handleOnShelf(scope.row.id)">上架</el-button>
+                  <el-button
+                    v-if="scope.row.isOnShelf"
+                    :disabled="!(scope.row.userId === userId)"
+                    size="mini"
+                    type="danger"
+                    @click="handleUnShelf(scope.row.id)">下架</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </div>
@@ -147,7 +175,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getCase, deleteCase, getCaseThemeId, getCaseTitleId } from '@/api/case'
+import { getCase, deleteCase, getCaseThemeId, getCaseTitleId, caseOnshelf, caseUnshelf } from '@/api/case'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
@@ -240,6 +268,28 @@ export default {
             this.caseComments()
           }
         })
+      })
+    },
+    handleOnShelf(id) {
+      caseOnshelf(id).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'success',
+            message: '已上架!'
+          })
+          this.handleGetCase()
+        }
+      })
+    },
+    handleUnShelf(id) {
+      caseUnshelf(id).then(res => {
+        if (res.data.errorMsg === '操作成功') {
+          this.$message({
+            type: 'info',
+            message: '已下架!'
+          })
+          this.handleGetCase()
+        }
       })
     },
     getCaseAllIdList() {

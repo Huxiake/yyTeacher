@@ -7,7 +7,7 @@
     <el-dropdown class="avatar-container" trigger="click">
       <!-- <div class="avatar-wrapper">
       </div> -->
-      <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+      <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar" style="width: 24px;height: 24px;">
       <span>{{ name }}</span>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
         <router-link class="inlineBlock" to="/">
