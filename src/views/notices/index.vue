@@ -4,7 +4,7 @@
       <breadcrumb/>
       <div>通知中心</div>
     </div>
-    <div class="pageHeaderWrapper">
+    <!-- <div class="pageHeaderWrapper">
       <div class="table-card">
         <div class="table-card-body">
           <div class="table-tools">
@@ -73,7 +73,83 @@
           </div>
         </div>
       </div>
+    </div> -->
+    <div class="pageHeaderWrapper">
+      <div class="table-card">
+        <div class="table-card-header">
+          <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+            <el-form-item label="标题">
+              <el-input v-model="searchForm.title" placeholder="请输入标题"/>
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="searchForm.status" placeholder="状态">
+                <el-option label="全部" value="all"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">查询</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="table-card-content">
+          <el-button type="primary">创建公告</el-button>
+          <div class="table-card-body">
+            <div class="table-body">
+              <el-table
+                :data="caseList"
+                border
+              >
+                <el-table-column
+                  key="1"
+                  prop="title"
+                  label="标题"
+                />
+                <el-table-column
+                  key="2"
+                  label="封面图"
+                >
+                  <template slot-scope="scope">
+                    <img :src="scope.row.coverPic" width="200" height="100">
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  key="3"
+                  prop="commentCount"
+                  label="评论数"
+                />
+                <el-table-column
+                  key="4"
+                  prop="likeCount"
+                  label="点赞数"
+                />
+                <el-table-column
+                  key="5"
+                  prop="createTime"
+                  label="创建时间"
+                />
+                <el-table-column
+                  key="6"
+                  prop="status"
+                  label="状态"
+                />
+                <el-table-column
+                  key="8"
+                  label="操作"
+                >
+                  <template slot-scope="scope">
+                    <el-button type="text">编辑</el-button>
+                    <el-button type="text">删除</el-button>
+                    <el-button type="text">停用</el-button>
+                    <el-button type="text">查看评论</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -87,7 +163,20 @@ export default {
   },
   data() {
     return {
-      caseList: []
+      caseList: [
+        {
+          title: '测试10',
+          coverPic: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2146046871,2611785107&fm=27&gp=0.jpg',
+          commentCount: 1,
+          likeCount: 10,
+          createTime: new Date().toString(),
+          status: '启用'
+        }
+      ],
+      searchForm: {
+        title: '',
+        status: ''
+      }
     }
   },
   created() {
@@ -136,7 +225,15 @@ export default {
     transition: all .3s;
 }
 .table-card-body {
-  padding:24px 32px;
+  padding:24px 0;
+}
+
+// ---
+.table-card-header{
+  padding:15px 20px 0;
+}
+.table-card-content{
+  padding:5px 20px;
 }
 </style>
 

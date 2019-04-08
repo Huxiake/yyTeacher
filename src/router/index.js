@@ -69,7 +69,6 @@ export const constantRouterMap = [
       {
         path: '/case/themes',
         name: 'themes',
-        // component: () => import('@/views/case/manage'),
         component: () => import('@/views/case/theme'),
         meta: { title: '案例主题管理', icon: 'table' }
       },

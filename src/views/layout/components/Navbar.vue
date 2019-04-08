@@ -15,11 +15,33 @@
             主页
           </el-dropdown-item>
         </router-link>
+        <el-dropdown-item @click.native="changePasswordDialogVisible=true">
+          修改密码
+        </el-dropdown-item>
         <el-dropdown-item divided>
           <span style="display:block;" @click="logout">退出</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+
+    <!-- 修改密码的dialog -->
+    <el-dialog :visible.sync="changePasswordDialogVisible" title="修改密码" width="40%" append-to-body>
+      <el-form :model="changePasswordForm">
+        <el-form-item :label-width="formLabelWidth" label="旧密码">
+          <el-input v-model="changePasswordForm.oldPassword" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" label="新密码">
+          <el-input v-model="changePasswordForm.newPassword" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" label="确认密码">
+          <el-input v-model="changePasswordForm.surePassword" autocomplete="off"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="changePasswordDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleChangePassword">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -34,7 +56,14 @@ export default {
   data() {
     return {
       activeIndex: '',
-      routers: []
+      routers: [],
+      changePasswordDialogVisible: false,
+      changePasswordForm: {
+        oldPassword: '',
+        newPassword: '',
+        surePassword: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   computed: {
@@ -60,6 +89,10 @@ export default {
     },
     handleSelect(key, keyPath) {
       this.$router.push(key)
+    },
+    handleChangePassword() {
+      // 修改密码
+      alert('修改密码')
     }
   }
 }
