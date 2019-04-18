@@ -30,8 +30,8 @@
         </el-button>
       </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">username: 13609748850</span>
-        <span> password: 123456</span>
+        <span style="margin-right:20px;"><a>注册</a></span>
+        <span><a>忘记密码</a></span>
       </div>
     </el-form>
   </div>
